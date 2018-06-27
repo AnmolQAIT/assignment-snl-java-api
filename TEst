@@ -1,0 +1,105 @@
+package com.qainfotech.automation.Snl;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.UUID;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.testng.Assert;
+import com.qainfotech.tap.training.snl.api.Board;
+import com.qainfotech.tap.training.snl.api.GameInProgressException;
+import com.qainfotech.tap.training.snl.api.InvalidTurnException;
+import com.qainfotech.tap.training.snl.api.MaxPlayersReachedExeption;
+import com.qainfotech.tap.training.snl.api.NoUserWithSuchUUIDException;
+import com.qainfotech.tap.training.snl.api.PlayerExistsException;
+
+public class TEst {
+	Board board;
+	
+	public TEst() throws FileNotFoundException, UnsupportedEncodingException, IOException {
+		board = new Board();
+	}
+		
+	public void sixplayerregistration(String player1,String player2,String player3,String player4,String player5,String player6)throws MaxPlayersReachedExeption,FileNotFoundException,UnsupportedEncodingException, IOException, PlayerExistsException, GameInProgressException
+	{
+		board.registerPlayer(player1);board.registerPlayer(player2);
+        board.registerPlayer(player3);board.registerPlayer(player4);
+        board.registerPlayer(player5);board.registerPlayer(player6);
+ 	}
+	 
+	public void playerregisteragain(String player1,String player2,String player3,String player4)throws MaxPlayersReachedExeption,FileNotFoundException,UnsupportedEncodingException, IOException, PlayerExistsException, GameInProgressException
+	{
+		board.registerPlayer(player1);board.registerPlayer(player2);
+        board.registerPlayer(player3);board.registerPlayer(player4);
+    }
+	
+	public void fourplayerregistration(String player1,String player2,String player3,String player4)throws MaxPlayersReachedExeption,FileNotFoundException,UnsupportedEncodingException, IOException, PlayerExistsException, GameInProgressException
+	{
+		board.registerPlayer(player1);board.registerPlayer(player2);
+        board.registerPlayer(player3);board.registerPlayer(player4);
+  	}
+	
+	public void registerduringgame(String p1,String p2,String p3,String p4) throws FileNotFoundException, UnsupportedEncodingException, MaxPlayersReachedExeption, IOException, PlayerExistsException, GameInProgressException, InvalidTurnException
+	{
+	board.registerPlayer(p1);
+	board.registerPlayer(p2);
+	board.registerPlayer(p3);
+	JSONObject data=board.getData();
+	UUID player_id=(UUID)(data.getJSONArray("players").getJSONObject(0)).get("uuid");
+	board.rollDice(player_id);
+	board.registerPlayer(p4);
+	}
+	
+	public void deleteuserwhoisnotloggedin() throws FileNotFoundException, UnsupportedEncodingException, NoUserWithSuchUUIDException
+	{
+		UUID id=UUID.randomUUID();
+		board.deletePlayer(id);
+	}
+	
+	
+	
+	public void wrongchance(String p1,String p2,String p3,String p4) throws FileNotFoundException, UnsupportedEncodingException, MaxPlayersReachedExeption, IOException, PlayerExistsException, GameInProgressException, InvalidTurnException
+	{
+		fourplayerregistration(p1, p2, p3, p4);
+		JSONObject obj=board.getData();
+		UUID id=(UUID)obj.getJSONArray("players").getJSONObject(1).get("uuid");
+		board.rollDice(id);
+	}
+
+	public void checkuserdeletion(String p1, String p2, String p3, String p4) throws FileNotFoundException, UnsupportedEncodingException, MaxPlayersReachedExeption, IOException, PlayerExistsException, GameInProgressException, NoUserWithSuchUUIDException 
+	{
+		fourplayerregistration(p1, p2, p3, p4);
+		JSONObject data=board.getData();
+		UUID id=(UUID)data.getJSONArray("players").getJSONObject(0).get("uuid");
+	   board.deletePlayer(id);
+	   data=board.getData();
+	   boolean status=true;
+	   for(int i=0;i<data.getJSONArray("players").length();i++)
+	   {
+		   String username=data.getJSONArray("players").getJSONObject(i).getString("name");
+		   if(username.equals(p1))
+			   status=false;
+		   else
+			   status=true;
+	   }
+	   Assert.assertTrue(true);
+   }
+	
+	public void player_is_moved_or_not(String player) throws FileNotFoundException, UnsupportedEncodingException, PlayerExistsException, GameInProgressException, MaxPlayersReachedExeption, IOException, InvalidTurnException
+	{
+		board.registerPlayer(player);
+	    JSONObject data=board.getData();
+	    UUID id=(UUID)data.getJSONArray("players").getJSONObject(0).get("uuid");
+	    boolean status=true;
+	    int initial_position=(data.getJSONArray("players").getJSONObject(0)).getInt("position");
+	    board.rollDice(id);
+	    int final_position=(data.getJSONArray("players").getJSONObject(0)).getInt("position");
+	    if(initial_position!=final_position)
+	    	status=true;
+	    else
+	    	status=false;
+	    Assert.assertTrue(status);
+	}
+}
