@@ -1,0 +1,72 @@
+package com.qainfotech.automation.Snl;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import org.testng.annotations.*;
+import com.qainfotech.tap.training.snl.api.Board;
+import com.qainfotech.tap.training.snl.api.GameInProgressException;
+import com.qainfotech.tap.training.snl.api.InvalidTurnException;
+import com.qainfotech.tap.training.snl.api.MaxPlayersReachedExeption;
+import com.qainfotech.tap.training.snl.api.NoUserWithSuchUUIDException;
+import com.qainfotech.tap.training.snl.api.PlayerExistsException;
+
+public class SNL_Test 
+{    
+	 TEst test;
+	 
+	@BeforeMethod
+   public void start() throws FileNotFoundException, UnsupportedEncodingException, IOException
+  {
+	  test = new TEst();
+  }
+	
+   @Test(expectedExceptions=MaxPlayersReachedExeption.class)
+   public void playerscountTest() throws FileNotFoundException,UnsupportedEncodingException, PlayerExistsException, GameInProgressException, MaxPlayersReachedExeption, IOException
+   {
+	   test.sixplayerregistration("rishabh","anmol","aditya","prince","madhur","shivam");
+   }
+  
+   @Test
+   public void Maximum_number_of_players() throws FileNotFoundException, UnsupportedEncodingException, MaxPlayersReachedExeption, IOException, PlayerExistsException, GameInProgressException
+   {
+	 test.fourplayerregistration("anmol","aditya","anshul","abel");  
+   }
+   
+   @Test(expectedExceptions=PlayerExistsException.class)
+   public void samenameTest() throws FileNotFoundException, UnsupportedEncodingException, PlayerExistsException, GameInProgressException, MaxPlayersReachedExeption, IOException
+   {
+	   test.playerregisteragain("anmol","aditya","anmol","aditya");
+   }
+   
+   @Test(expectedExceptions=GameInProgressException.class)
+   public void gameinterrupt() throws FileNotFoundException, UnsupportedEncodingException, MaxPlayersReachedExeption, IOException, PlayerExistsException, GameInProgressException, InvalidTurnException
+   {
+	   test.registerduringgame("abc","def","ghi","jkl");
+   }
+   
+   @Test(expectedExceptions=NoUserWithSuchUUIDException.class)
+   public void deleteinvaliduser() throws FileNotFoundException, UnsupportedEncodingException, NoUserWithSuchUUIDException
+   {
+	   test.deleteuserwhoisnotloggedin();
+   }
+   
+   @Test
+   public void checkwhetheruserisdeletedsuccessfully() throws NoUserWithSuchUUIDException, MaxPlayersReachedExeption, IOException, PlayerExistsException, GameInProgressException
+   {
+	test.checkuserdeletion("rishabh","anmol","aditya","ayush");
+   }
+   
+   @Test(expectedExceptions=InvalidTurnException.class)
+   public void invalidturnTest() throws FileNotFoundException, UnsupportedEncodingException, MaxPlayersReachedExeption, IOException, PlayerExistsException, GameInProgressException, InvalidTurnException
+   {
+	test.wrongchance("anmol","aditya","prine","shubham");
+   }
+   
+   @Test
+   public void user_move_validation() throws FileNotFoundException, UnsupportedEncodingException, PlayerExistsException, GameInProgressException, MaxPlayersReachedExeption, IOException, InvalidTurnException
+   {
+	   test.player_is_moved_or_not("Anmol");
+   }
+}
